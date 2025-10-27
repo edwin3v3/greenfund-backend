@@ -18,5 +18,6 @@ async def generate_recommendations(
     Returns:
         List of recommendation dictionaries
     """
-    # Temporary implementation until full recommendation logic is added
+    # Temporary implementation until full recommendation logic is added .
+
     return []
