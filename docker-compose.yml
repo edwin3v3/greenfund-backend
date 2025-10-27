@@ -1,1 +1,38 @@
-# docker-compose placeholder
+services:
+  backend:
+    build: .
+    ports:
+      - "8000:8000"
+    volumes:
+      - .:/app
+    env_file:
+      - .env
+    # --- THIS IS THE CHANGE ---
+    # Add condition: service_healthy
+    depends_on:
+      db: # Reference the db service
+        condition: service_healthy # Wait until db healthcheck passes
+    # --- End Change ---
+    command: uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
+
+  db:
+    image: postgres:15-alpine
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=app_db
+    ports:
+      - "5432:5432" # Keep this if you need to connect directly, otherwise optional
+    # --- THIS IS THE CHANGE ---
+    # Add a healthcheck to test if PostgreSQL is ready
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d app_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    # --- End Change ---
+
+volumes:
+  postgres_data:
