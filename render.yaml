@@ -1,12 +1,11 @@
-# Forcing a new deploy
-# render.yaml
 services:
   # 1. The Database
-  - type: psql
+  - type: database
     name: greenfund-db
     databaseName: greenfund
     user: greenfund_user
     plan: free
+    engine: postgres
 
   # 2. The Backend
   - type: web
@@ -18,7 +17,7 @@ services:
     envVars:
       - key: DATABASE_URL
         fromService:
-          name: greenfund-db # References the database by name
+          name: greenfund-db
           property: connectionString
       - key: SECRET_KEY
         generateValue: true
