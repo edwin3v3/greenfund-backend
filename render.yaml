@@ -7,7 +7,6 @@ services:
     name: greenfund-backend
     runtime: docker
     plan: free
-    context: .
     dockerfilePath: ./Dockerfile
     autoDeploy: true
     envVars:
@@ -40,7 +39,6 @@ services:
     runtime: docker
     plan: free
     repo: https://github.com/edwin3v3/greenfund-frontend
-    context: .
     dockerfilePath: ./Dockerfile
     autoDeploy: true
     envVars:
