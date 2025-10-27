@@ -32,19 +32,16 @@ def update_users_me(
     update_data = user_update.model_dump(exclude_unset=True)
 
     if not update_data:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST, detail="No update data provided")
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="No update data provided")
 
     if "email" in update_data and update_data["email"] != current_user.email:
-        existing_user = db.exec(select(User).where(
-            User.email == update_data["email"])).first()
+        existing_user = db.exec(select(User).where(User.email == update_data["email"])).first()
         if existing_user:
-            raise HTTPException(status_code=status.HTTP_409_CONFLICT,
-                                detail="Email already registered by another user")
+            raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="Email already registered by another user")
 
     for key, value in update_data.items():
         setattr(current_user, key, value)
-
+    
     try:
         db.add(current_user)
         db.commit()
@@ -52,13 +49,10 @@ def update_users_me(
         return current_user
     except Exception as e:
         db.rollback()
-        print(f"Error updating user: {e}")
-        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                            detail="Could not update user details")
+        print(f"Error updating user: {e}") 
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Could not update user details")
 
 # --- vvvv ADD THIS NEW ENDPOINT vvvv ---
-
-
 @router.post("/me/change-password", status_code=status.HTTP_204_NO_CONTENT)
 def change_user_password(
     password_data: UserPasswordChange,
@@ -74,18 +68,17 @@ def change_user_password(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Incorrect old password."
         )
-
+        
     # 2. Check if new password is too short
     if len(password_data.new_password) < 8:
-        raise HTTPException(
+         raise HTTPException(
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
             detail="New password must be at least 8 characters long."
         )
 
     # 3. Hash the new password and save it
     try:
-        current_user.hashed_password = get_password_hash(
-            password_data.new_password)
+        current_user.hashed_password = get_password_hash(password_data.new_password)
         db.add(current_user)
         db.commit()
     except Exception as e:
@@ -94,6 +87,6 @@ def change_user_password(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Error updating password: {e}"
         )
-
-    return  # Return 204 No Content
+    
+    return # Return 204 No Content
 # --- ^^^^ END NEW ENDPOINT ^^^^ ---

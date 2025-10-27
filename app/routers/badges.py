@@ -9,7 +9,6 @@ from app.security import get_current_user
 
 router = APIRouter(prefix="/badges", tags=["Badges"])
 
-
 @router.get("/", response_model=List[BadgeRead])
 def get_all_available_badges(db: Session = Depends(get_db)):
     """
@@ -17,7 +16,6 @@ def get_all_available_badges(db: Session = Depends(get_db)):
     """
     badges = db.exec(select(Badge)).all()
     return badges
-
 
 @router.get("/me", response_model=List[UserBadgeRead])
 def get_my_earned_badges(
@@ -32,9 +30,8 @@ def get_my_earned_badges(
         .where(UserBadge.user_id == current_user.id)
         .order_by(UserBadge.earned_at.desc())
     ).all()
-
+    
     return user_badges
-
 
 @router.get("/me/count", response_model=BadgeCountResponse)
 def get_my_badge_count(
@@ -50,7 +47,7 @@ def get_my_badge_count(
         select(func.count(UserBadge.badge_id))
         .where(UserBadge.user_id == current_user.id)
     ).one()
-
+    
     return BadgeCountResponse(count=count)
 
 
@@ -67,13 +64,12 @@ def award_test_badge(
     # 1. Find the badge in the DB
     badge = db.exec(select(Badge).where(Badge.name == badge_name)).first()
     if not badge:
-        raise HTTPException(
-            status_code=404, detail=f"Badge '{badge_name}' not found. Create it first.")
+        raise HTTPException(status_code=404, detail=f"Badge '{badge_name}' not found. Create it first.")
 
     # 2. Check if user already has it
     existing_link = db.get(UserBadge, (current_user.id, badge.id))
     if existing_link:
-        return existing_link  # User already has this badge
+        return existing_link # User already has this badge
 
     # 3. Award the badge
     new_badge_link = UserBadge(user_id=current_user.id, badge_id=badge.id)
