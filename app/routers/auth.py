@@ -2,9 +2,11 @@ from datetime import timedelta
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlmodel import Session, select
-from app import models, schemas, security  # Make sure these imports are correct
+from app import models, schemas, security # Make sure these imports are correct
 from app.database import get_db
-from typing import Annotated  # Import Annotated
+from typing import Annotated # Import Annotated
+
+
 
 router = APIRouter(prefix="/auth", tags=["Authentication"])
 
@@ -16,9 +18,9 @@ def register_user(user_create: schemas.UserCreate, db: Session = Depends(get_db)
     if existing_user:
         raise HTTPException(status_code=status.HTTP_409_CONFLICT,
                             detail="Email already registered")
-
+    
     hashed_password = security.get_password_hash(user_create.password)
-
+    
     # Use your original model validation
     db_user = models.User.model_validate(
         user_create, update={'hashed_password': hashed_password}
