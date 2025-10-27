@@ -1,0 +1,63 @@
+# This is your Render Blueprint for a 2-repo project
+# It lives in the root of your BACKEND repo.
+
+services:
+  # -----------------
+  #  1. The Database
+  # -----------------
+  - type: psql
+    name: greenfund-db
+    databaseName: greenfund
+    user: greenfund_user
+    plan: free
+
+  # -----------------
+  #  2. The Backend
+  # -----------------
+  - type: web
+    name: greenfund-backend
+    runtime: docker
+    plan: free
+    # 'repo' is this repo (the one containing render.yaml)
+    # 'context' is the root of this repo
+    context: .
+    dockerfilePath: ./Dockerfile # Path to backend Dockerfile
+    envVars:
+      - key: DATABASE_URL
+        fromService:
+          type: psql
+          name: greenfund-db
+          property: connectionString
+      - key: SECRET_KEY
+        generateValue: true
+      - key: ALGORITHM
+        value: HS256
+      - key: CORS_ORIGIN
+        fromService:
+          type: web
+          name: greenfund-frontend # Gets URL of the live frontend
+          property: url
+      - key: OPENAI_API_KEY
+        sync: false # Set this in the Render dashboard
+
+  # -----------------
+  #  3. The Frontend
+  # -----------------
+  - type: web
+    name: greenfund-frontend
+    runtime: docker
+    plan: free
+    # --- vvvv THE IMPORTANT CHANGE vvvv ---
+    # Point to your OTHER GitHub repo
+    repo: https://github.com/edwin3v3/greenfund-frontend
+    # --- ^^^^ END CHANGE ^^^^ ---
+    context: . # Assumes Dockerfile is in the root of that repo
+    dockerfilePath: ./Dockerfile # Path to frontend Dockerfile in that repo
+    envVars:
+      - key: VITE_API_BASE_URL
+        fromService:
+          type: web
+          name: greenfund-backend # Gets URL of the live backend
+          property: url
+      - key: VITE_API_BASE_URL_SUFFIX
+        value: /api

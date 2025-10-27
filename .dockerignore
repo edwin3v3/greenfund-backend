@@ -1,0 +1,9 @@
+# Ignore the virtual environment
+venv/
+__pycache__/
+.pytest_cache/
+.vscode/
+*.pyc
+*.pyo
+*.pyd
+greenfund.db

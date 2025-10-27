@@ -2,25 +2,22 @@ from sqlmodel import Field, Relationship, SQLModel, JSON
 from sqlalchemy import Column
 from typing import Optional, List, TYPE_CHECKING
 from datetime import datetime, timezone
-from pydantic import EmailStr  # Need EmailStr for User model
+from pydantic import EmailStr # Need EmailStr for User model
 
 # --- Forward References ---
 # This helps prevent circular import errors
 if TYPE_CHECKING:
     # Added Notification here
-    from .models import User, Farm, FarmActivity, SoilReport, ForumThread, ForumPost, Badge, UserBadge, Notification
+    from .models import User, Farm, FarmActivity, SoilReport, ForumThread, ForumPost, Badge, UserBadge, Notification 
 
 # --- User Model ---
-
-
 class User(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
     full_name: Optional[str] = None
-    email: EmailStr = Field(unique=True, index=True)
+    email: EmailStr = Field(unique=True, index=True) 
     hashed_password: str
     location: Optional[str] = None
-    created_at: datetime = Field(
-        default_factory=lambda: datetime.now(timezone.utc))
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
     # --- Relationships ---
     farms: List["Farm"] = Relationship(back_populates="owner")
@@ -28,23 +25,20 @@ class User(SQLModel, table=True):
     threads: List["ForumThread"] = Relationship(back_populates="owner")
     posts: List["ForumPost"] = Relationship(back_populates="owner")
     # --- Renamed badge_links -> badges for consistency ---
-    badges: List["UserBadge"] = Relationship(back_populates="user")
+    badges: List["UserBadge"] = Relationship(back_populates="user") 
     # --- ADDED: Relationship to Notifications ---
     notifications: List["Notification"] = Relationship(back_populates="user")
     # --- END ADDITION ---
 
 # --- Farm Model ---
-
-
 class Farm(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
     name: str
     location_text: str
-    latitude: Optional[float] = None
-    longitude: Optional[float] = None
-    size_acres: Optional[float] = None
-    created_at: datetime = Field(
-        default_factory=lambda: datetime.now(timezone.utc))
+    latitude: Optional[float] = None 
+    longitude: Optional[float] = None 
+    size_acres: Optional[float] = None 
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     current_crop: Optional[str] = Field(default=None, index=True)
 
     owner_id: int = Field(foreign_key="user.id")
@@ -70,8 +64,6 @@ class FarmActivity(SQLModel, table=True):
     user: "User" = Relationship(back_populates="activities")
 
 # --- SoilReport Model ---
-
-
 class SoilReport(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
     date: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
@@ -81,8 +73,7 @@ class SoilReport(SQLModel, table=True):
     potassium: Optional[float] = Field(default=None)
     moisture: Optional[float] = Field(default=None)
     ai_analysis_text: Optional[str] = None
-    suggested_crops: Optional[List[str]] = Field(
-        default=None, sa_column=Column(JSON))
+    suggested_crops: Optional[List[str]] = Field(default=None, sa_column=Column(JSON))
 
     farm_id: int = Field(foreign_key="farm.id")
     farm: "Farm" = Relationship(back_populates="soil_reports")
@@ -93,8 +84,7 @@ class ForumThread(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
     title: str = Field(index=True)
     content: str
-    created_at: datetime = Field(
-        default_factory=lambda: datetime.now(timezone.utc))
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
     owner_id: int = Field(foreign_key="user.id")
     owner: "User" = Relationship(back_populates="threads")
@@ -102,20 +92,17 @@ class ForumThread(SQLModel, table=True):
     posts: List["ForumPost"] = Relationship(back_populates="thread")
 
 # --- ForumPost Model ---
-
-
 class ForumPost(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
     content: str
-    created_at: datetime = Field(
-        default_factory=lambda: datetime.now(timezone.utc))
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
     owner_id: int = Field(foreign_key="user.id")
     owner: "User" = Relationship(back_populates="posts")
 
     thread_id: int = Field(foreign_key="forumthread.id")
     thread: "ForumThread" = Relationship(back_populates="posts")
-
+    
     # --- ADDED: Relationship to Notifications ---
     notifications: List["Notification"] = Relationship(back_populates="post")
     # --- END ADDITION ---
@@ -124,34 +111,31 @@ class ForumPost(SQLModel, table=True):
 # --- Badge Models ---
 class Badge(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
-    name: str = Field(index=True, unique=True)
-    description: str
-    icon_name: Optional[str] = None
+    name: str = Field(index=True, unique=True) 
+    description: str              
+    icon_name: Optional[str] = None   
     user_links: List["UserBadge"] = Relationship(back_populates="badge")
-
 
 class UserBadge(SQLModel, table=True):
     user_id: int = Field(foreign_key="user.id", primary_key=True)
     badge_id: int = Field(foreign_key="badge.id", primary_key=True)
-    earned_at: datetime = Field(
-        default_factory=lambda: datetime.now(timezone.utc))
+    earned_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     # --- Renamed badge_links -> user ---
-    user: "User" = Relationship(back_populates="badges")
+    user: "User" = Relationship(back_populates="badges") 
     badge: "Badge" = Relationship(back_populates="user_links")
 
 
 # --- vvvv NEW NOTIFICATION MODEL vvvv ---
 class Notification(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
-    user_id: int = Field(foreign_key="user.id", index=True)  # User TO notify
+    user_id: int = Field(foreign_key="user.id", index=True) # User TO notify
     message: str
     is_read: bool = Field(default=False, index=True)
-    created_at: datetime = Field(
-        default_factory=lambda: datetime.now(timezone.utc))
-
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    
     # Link to the post that triggered it (nullable in case of system notifications later)
-    post_id: Optional[int] = Field(default=None, foreign_key="forumpost.id")
-
+    post_id: Optional[int] = Field(default=None, foreign_key="forumpost.id") 
+    
     # Relationships
     user: "User" = Relationship(back_populates="notifications")
     post: Optional["ForumPost"] = Relationship(back_populates="notifications")

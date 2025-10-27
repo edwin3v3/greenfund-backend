@@ -1,23 +1,22 @@
-"""Module for generating climate-related recommendations based on weather and farm data."""
-from typing import Dict, Any, List, Optional
-from app.models import FarmActivity
+"""Small recommendation helper used by multiple routers.
+
+This module provides a lightweight async function `generate_recommendations`
+that returns an empty list for now. It intentionally avoids importing
+heavy dependencies so it can be imported by `app.routers.climate`.
+"""
+
+from typing import Any, Dict, List, Optional
 
 
 async def generate_recommendations(
     weather_data: Dict[str, Any],
-    activities: List[FarmActivity],
-    current_crop: Optional[str] = None
+    activities: List[Any],
+    current_crop: Optional[str] = None,
 ) -> List[Dict[str, Any]]:
-    """Generate recommendations based on weather data and farm activities.
+    """Return a list of recommendation dicts based on inputs.
 
-    Args:
-        weather_data: Daily weather forecast data from Open-Meteo API
-        activities: Recent farm activities
-        current_crop: Current crop being grown (optional)
-
-    Returns:
-        List of recommendation dictionaries
+    This is a minimal placeholder implementation to satisfy imports and
+    avoid runtime ImportError. Replace with real logic when ready.
     """
-    # Temporary implementation until full recommendation logic is added .
-
+    # keep implementation minimal and dependency-free
     return []
