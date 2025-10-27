@@ -3,7 +3,7 @@
 
 services:
   # -----------------
-  #  1. The Database
+  #  1. The Database (This part is correct)
   # -----------------
   - type: psql
     name: greenfund-db
@@ -18,14 +18,12 @@ services:
     name: greenfund-backend
     runtime: docker
     plan: free
-    # 'repo' is this repo (the one containing render.yaml)
-    # 'context' is the root of this repo
     context: .
-    dockerfilePath: ./Dockerfile # Path to backend Dockerfile
+    dockerfilePath: ./Dockerfile
     envVars:
       - key: DATABASE_URL
         fromService:
-          type: psql
+          # type: psql  <-- DELETE THIS LINE
           name: greenfund-db
           property: connectionString
       - key: SECRET_KEY
@@ -35,29 +33,26 @@ services:
       - key: CORS_ORIGIN
         fromService:
           type: web
-          name: greenfund-frontend # Gets URL of the live frontend
+          name: greenfund-frontend
           property: url
       - key: OPENAI_API_KEY
-        sync: false # Set this in the Render dashboard
+        sync: false
 
   # -----------------
-  #  3. The Frontend
+  #  3. The Frontend (This part is correct)
   # -----------------
   - type: web
     name: greenfund-frontend
     runtime: docker
     plan: free
-    # --- vvvv THE IMPORTANT CHANGE vvvv ---
-    # Point to your OTHER GitHub repo
     repo: https://github.com/edwin3v3/greenfund-frontend
-    # --- ^^^^ END CHANGE ^^^^ ---
-    context: . # Assumes Dockerfile is in the root of that repo
-    dockerfilePath: ./Dockerfile # Path to frontend Dockerfile in that repo
+    context: .
+    dockerfilePath: ./Dockerfile
     envVars:
       - key: VITE_API_BASE_URL
         fromService:
           type: web
-          name: greenfund-backend # Gets URL of the live backend
+          name: greenfund-backend
           property: url
       - key: VITE_API_BASE_URL_SUFFIX
         value: /api
