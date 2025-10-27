@@ -1,19 +1,13 @@
-# This is your Render Blueprint for a 2-repo project
-# It lives in the root of your BACKEND repo.
-
+# render.yaml
 services:
-  # -----------------
-  #  1. The Database (This part is correct)
-  # -----------------
+  # 1. The Database
   - type: psql
     name: greenfund-db
     databaseName: greenfund
     user: greenfund_user
     plan: free
 
-  # -----------------
-  #  2. The Backend
-  # -----------------
+  # 2. The Backend
   - type: web
     name: greenfund-backend
     runtime: docker
@@ -23,8 +17,7 @@ services:
     envVars:
       - key: DATABASE_URL
         fromService:
-          # type: psql  <-- DELETE THIS LINE
-          name: greenfund-db
+          name: greenfund-db # References the database by name
           property: connectionString
       - key: SECRET_KEY
         generateValue: true
@@ -38,9 +31,7 @@ services:
       - key: OPENAI_API_KEY
         sync: false
 
-  # -----------------
-  #  3. The Frontend (This part is correct)
-  # -----------------
+  # 3. The Frontend
   - type: web
     name: greenfund-frontend
     runtime: docker
