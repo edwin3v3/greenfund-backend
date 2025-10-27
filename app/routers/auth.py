@@ -6,6 +6,8 @@ from app import models, schemas, security # Make sure these imports are correct
 from app.database import get_db
 from typing import Annotated # Import Annotated
 
+
+
 router = APIRouter(prefix="/auth", tags=["Authentication"])
 
 
@@ -41,28 +43,29 @@ def register_user(user_create: schemas.UserCreate, db: Session = Depends(get_db)
 @router.post("/token", response_model=schemas.Token)
 # --- END FIX ---
 def login_for_access_token(
-    form_data: Annotated[OAuth2PasswordRequestForm, Depends()], # Use Annotated
+    # Use Annotated
+    form_data: Annotated[OAuth2PasswordRequestForm, Depends()],
     db: Session = Depends(get_db)
 ):
     user = db.exec(select(models.User).where(
         models.User.email == form_data.username)).first()
-    
+
     if not user or not security.verify_password(form_data.password, user.hashed_password):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Incorrect email or password", 
+            detail="Incorrect email or password",
             headers={"WWW-Authenticate": "Bearer"}
         )
-        
+
     # Check if ACCESS_TOKEN_EXPIRE_MINUTES is in your security file
     # If not, just remove the 'expires_delta' part
     try:
         expires_minutes = security.ACCESS_TOKEN_EXPIRE_MINUTES
     except AttributeError:
-        expires_minutes = 30 # Default to 30 minutes if not set
+        expires_minutes = 30  # Default to 30 minutes if not set
 
     access_token_expires = timedelta(minutes=expires_minutes)
-    
+
     access_token = security.create_access_token(
         data={"sub": user.email}, expires_delta=access_token_expires
     )
