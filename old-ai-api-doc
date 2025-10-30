@@ -1,0 +1,124 @@
+# 🌾 GreenFund AI API Documentation
+
+---
+
+[cite_start]**Project Name:** GreenFund: AI-Driven Climate-Smart Farming [cite: 2]
+
+**Purpose:** This document details the implementation, data flow, and underlying prompt strategies for the Artificial Intelligence services integrated into the GreenFund platform. [cite_start]The AI layer is designed to transform raw data (weather, soil, activity) into actionable, farm-specific advice aligned with climate action and sustainability goals. [cite: 3, 4]
+
+**Architecture:** All AI functions are managed by the **FastAPI Backend**. [cite_start]The frontend application consumes these services via standard REST endpoints. [cite: 5]
+
+---
+
+## [cite_start]I. AI Service Implementation Details [cite: 6]
+
+| Component           | Technology               | Role                                                                                                                                                        |
+| :------------------ | :----------------------- | :---------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **LLM Engine**      | OpenAI (GPT-4o, GPT-3.5) | [cite_start]Generative reasoning and advice creation. [cite: 7]                                                                                             |
+| **Vision Model**    | OpenAI Vision            | [cite_start]Multi-modal analysis of soil images for initial parameter estimation. [cite: 7]                                                                 |
+| **API Integration** | Python requests library  | [cite_start]Secured API calls from the FastAPI backend to OpenAI. [cite: 7]                                                                                 |
+| **Output Format**   | JSON Schema              | [cite_start]LLM responses are constrained using Pydantic schemas to ensure reliable, structured data output (e.g., lists of crops, risk objects). [cite: 7] |
+
+---
+
+## II. [cite_start]AI Climate Action Guidance [cite: 8]
+
+[cite_start]This suite of endpoints provides predictive and prescriptive guidance tailored to the farm's immediate climatic and operational context. [cite: 9]
+
+### [cite_start]A. Predictive Pest & Disease Alerts [cite: 10]
+
+[cite_start]**Endpoint:** `/api/climate-actions/alerts/{farm_id}` [cite: 11]
+
+| Parameter | Type    | Description                                |
+| :-------- | :------ | :----------------------------------------- |
+| `farm_id` | Integer | [cite_start]The target farm ID. [cite: 12] |
+
+[cite_start]**Logic & Prompt Strategy:** [cite: 13]
+
+1.  [cite_start]**Data Ingestion:** Backend fetches the farm's current crop type and the 7-day local weather forecast (temperature, humidity, precipitation). [cite: 14]
+2.  [cite_start]**Risk Assessment (Python Logic):** Simple Python logic performs initial anomaly detection (e.g., identifying three consecutive days of high humidity or sudden temperature drops). [cite: 15]
+3.  [cite_start]**LLM Call:** The summarized risk factors are injected into the following System Prompt: [cite: 16]
+    - [cite_start]**SYSTEM INSTRUCTION:** "You are 'GreenFund Predict', a pre-emptive agricultural risk advisor. Based on the data provided, identify the most likely pest or disease risk for the specified crop in the next 7 days. Your output must be in a highly structured JSON format." [cite: 16]
+    - [cite_start]**USER QUERY:** "The farm has [Crop Name]. Recent analysis shows: [List of Risk Factors, e.g., '3 days of >85% humidity']. What is the top risk, its severity (Low/Medium/High), and the specific pre-emptive advice for the farmer?" [cite: 17]
+
+---
+
+### [cite_start]B. Carbon Sequestration Guidance [cite: 18]
+
+[cite_start]**Endpoint:** `/api/climate-actions/carbon-guidance/{farm_id}` [cite: 19]
+
+| Parameter | Type    | Description                                |
+| :-------- | :------ | :----------------------------------------- |
+| `farm_id` | Integer | [cite_start]The target farm ID. [cite: 20] |
+
+[cite_start]**Logic & Prompt Strategy:** [cite: 21]
+
+1.  [cite_start]**Data Ingestion:** Backend gathers farm details (size, crop) and the historical log of Farm Activity (e.g., recent tilling, fertilizer use). [cite: 22]
+2.  [cite_start]**LLM Call:** The AI is tasked with suggesting concrete behavioral changes to meet climate goals. [cite: 23]
+    - [cite_start]**SYSTEM INSTRUCTION:** "You are 'GreenFund Carbon Analyst'. Your goal is to suggest sustainable farming practices common in **East Africa** that actively increase soil carbon sequestration and reduce overall emissions. Provide three distinct, immediate actions." [cite: 24]
+    - [cite_start]**USER QUERY:** "Given the farm is [Size] acres, currently growing [Crop], and the last activity was [Activity Type], provide 3 high-impact, actionable steps to increase carbon sequestration. For each action, estimate the relative effort and potential CO2e benefit." [cite: 25]
+
+---
+
+### [cite_start]C. Water Management Guidance [cite: 26]
+
+[cite_start]**Endpoint:** `/api/climate-actions/water-management/{farm_id}` [cite: 27]
+
+| Parameter | Type    | Description                                |
+| :-------- | :------ | :----------------------------------------- |
+| `farm_id` | Integer | [cite_start]The target farm ID. [cite: 28] |
+
+[cite_start]**Logic & Prompt Strategy:** [cite: 29]
+
+1.  [cite_start]**Data Ingestion:** Backend gathers farm location, current crop, soil type (from latest report), and recent rainfall data. [cite: 30]
+2.  [cite_start]**LLM Call:** The AI determines optimal irrigation timing and volume to minimize water waste. [cite: 31]
+    - [cite_start]**SYSTEM INSTRUCTION:** "You are 'GreenFund Water Advisor'. Your role is to provide precise, water-saving irrigation advice for the specified crop based on the latest climate data." [cite: 32]
+    - [cite_start]**USER QUERY:** "The farm is located at [Location], growing [Crop], and the soil is [Soil Type]. Recent rainfall has been [Amount]. Advise the farmer on the optimal time and volume for irrigation this week to conserve water while maintaining yield." [cite: 33]
+
+---
+
+## III. [cite_start]Multi-Modal Soil Analysis [cite: 34]
+
+[cite_start]This service accepts both structured lab data and unstructured image data to provide comprehensive crop recommendations. [cite: 35]
+
+### Structured Data Analysis
+
+[cite_start]**Endpoint:** `/api/soil/manual` [cite: 36]
+
+[cite_start]**Logic & Prompt Strategy:** [cite: 37]
+
+- [cite_start]LLM is presented with the explicit **pH, Nitrogen, Phosphorus, and Potassium** values. [cite: 39]
+- [cite_start]**Prompt Focus:** "Given these exact soil parameters (pH: X, N: Y, P: Z, K: A) and the geographical region (East Africa), recommend 3 highly suitable crops and provide detailed, actionable fertilization recommendations." [cite: 40]
+
+### Multi-Modal Vision Analysis
+
+[cite_start]**Endpoint:** `/api/soil/upload_soil_image/{farm_id}` [cite: 41, 42]
+
+[cite_start]**Logic & Prompt Strategy:** [cite: 43]
+
+- [cite_start]**Input:** Base64-encoded image data and the user's prompt. [cite: 44]
+- [cite_start]**Process:** The image and the prompt are sent to the **OpenAI Vision model**. [cite: 45]
+- [cite_start]**Prompt Focus:** "Analyze the provided image of the soil sample. Based on visual cues (texture, color, visible organic matter), estimate the soil's pH range, relative Nitrogen, and Phosphorous levels. Use these estimations to suggest a preliminary crop type." [cite: 47, 48, 49]
+
+### AI-Derived Summary
+
+[cite_start]**Endpoint:** `/api/soil/suggestions/summary` [cite: 50]
+
+[cite_start]**Logic & Prompt Strategy:** [cite: 51]
+
+- [cite_start]**Process:** This endpoint reads and aggregates `suggested_crops` from all recent AI-generated soil reports across the user's farms to provide a unified overview on the dashboard. [cite: 52]
+
+---
+
+## IV. [cite_start]General Chatbot Interface [cite: 53]
+
+[cite_start]**Endpoint:** `/api/chatbot/ask` [cite: 54]
+
+| Parameter | Type   | Description                              |
+| :-------- | :----- | :--------------------------------------- |
+| `message` | String | [cite_start]The user's query. [cite: 55] |
+
+[cite_start]**Logic & Prompt Strategy:** [cite: 56]
+
+- [cite_start]**System Prompt:** "You are 'GreenFund Assistant', an expert agricultural advisor specializing in sustainable farming practices for **East Africa**. Maintain a professional, encouraging tone, and keep answers concise and focused on practical, climate-smart solutions." [cite: 57, 58, 59]
+- [cite_start]**Process:** Provides real-time conversational assistance to the farmer without relying on farm-specific data. [cite: 60]
