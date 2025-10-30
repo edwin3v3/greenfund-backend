@@ -1,5 +1,8 @@
 # GreenFund Backend API
 
+## Authors
+Joan Rotich, Joe Wanjema and Edwin Mwaniki
+
 A FastAPI-based backend system for the GreenFund platform, designed to help farmers track and manage their environmental impact, get climate-smart agriculture recommendations, and participate in a community-driven knowledge sharing platform.
 
 ## 🌱 Features
