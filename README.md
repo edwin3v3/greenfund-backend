@@ -96,6 +96,20 @@ Security and data retention:
 - Store only the AI outputs that are necessary (the app stores `ai_analysis_text` and `suggested_crops`). Log minimal information about API responses.
 - Rotate `OPENAI_API_KEY` regularly and do not commit it to source control. Use environment-backed secrets (Docker secrets, vault, etc.) in production.
 
+## Key Screenshots of GreenFund App
+### Landing Page
+<p align="center">
+  <img src="./public/screenshots/gf-landing-page-screenshot.jpg" alt="Dashboard Screenshot" width="60%">
+</p>
+
+| **Farmer's Dashboard**  | **Farms** (Card & Map View of Farmer's farms) |
+|--------------------------|--------------------|
+| <img src="./public/screenshots/gf-dashboard-screenshot.jpg" alt="Dashboard Overview" width="87%"/> | <img src="./public/screenshots/gf-farms-screenshot.jpg" alt="Farm Analytics" width="97%"/> |
+
+| **Farm Details** | **Farm - Soil Analysis** |
+|--------------------------|--------------------|
+| <img src="./public/screenshots/gf-farmdetails-screenshot.jpg" alt="Dashboard Overview" width="94%"/> | <img src="./public/screenshots/gf-soilanalysis-screenshot.jpg" alt="Farm Analytics" width="98%"/> |
+
 
 ## 🚀 Getting Started
 
