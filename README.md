@@ -1,7 +1,8 @@
 # GreenFund Backend API
 
 ## Authors
-Joan Rotich, Joe Wanjema and Edwin Mwaniki
+[Joan Rotich](https://github.com/joan-pookie), [Joe Wanjema](https://github.com/Jwanjema) and [Edwin Mwaniki](https://github.com/edwin3v3/)
+
 
 A FastAPI-based backend system for the GreenFund platform, designed to help farmers track and manage their environmental impact, get climate-smart agriculture recommendations, and participate in a community-driven knowledge sharing platform.
 
@@ -155,10 +156,14 @@ Security and data retention:
 
 ## 📚 API Documentation
 
-Once the server is running, you can access:
+- **Interactive Docs (Swagger UI):**  
+  👉 [https://greenfund-backend.onrender.com/docs](https://greenfund-backend.onrender.com/docs)
 
-- Swagger UI documentation: http://localhost:8000/docs
-- ReDoc documentation: http://localhost:8000/redoc
+- **Readable Docs (ReDoc):**  
+  👉 [https://greenfund-backend.onrender.com/redoc](https://greenfund-backend.onrender.com/redoc)
+
+Use the Swagger version to test endpoints directly.  
+Use ReDoc for a clean reference overview.
 
 ### Main API Endpoints
 
