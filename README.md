@@ -156,10 +156,14 @@ Security and data retention:
 
 ## 📚 API Documentation
 
-Once the server is running, you can access:
+- **Interactive Docs (Swagger UI):**  
+  👉 [https://greenfund-backend.onrender.com/docs](https://greenfund-backend.onrender.com/docs)
 
-- Swagger UI documentation: http://localhost:8000/docs
-- ReDoc documentation: http://localhost:8000/redoc
+- **Readable Docs (ReDoc):**  
+  👉 [https://greenfund-backend.onrender.com/redoc](https://greenfund-backend.onrender.com/redoc)
+
+Use the Swagger version to test endpoints directly.  
+Use ReDoc for a clean reference overview.
 
 ### Main API Endpoints
 
